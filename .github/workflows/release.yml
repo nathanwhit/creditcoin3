@@ -19,7 +19,7 @@ jobs:
       - name: Figure out tag name
         shell: bash
         run: |
-          TAG_NAME=$(git describe --tag)
+          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
       - name: Sanity check tag name suffix
