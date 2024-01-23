@@ -83,7 +83,7 @@ jobs:
       - name: Figure out tag name
         shell: bash
         run: |
-          TAG_NAME=$(git describe --tag)
+          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
       - name: DEBUG
@@ -141,7 +141,7 @@ jobs:
       - name: Figure out tag name
         shell: bash
         run: |
-          TAG_NAME=$(git describe --tag)
+          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
       - name: Configure rustc version
@@ -202,7 +202,7 @@ jobs:
       - name: Figure out tag name
         shell: bash
         run: |
-          TAG_NAME=$(git describe --tag)
+          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
       - name: Build docker image
@@ -242,7 +242,7 @@ jobs:
       - name: Figure out tag name
         shell: bash
         run: |
-          TAG_NAME=$(git describe --tag)
+          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
           echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
       - name: Download binaries
