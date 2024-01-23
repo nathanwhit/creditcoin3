@@ -31,104 +31,104 @@ jobs:
       #   run: |
       #     ./.github/check-version-vs-git-tag.sh
 
-  build-native-runtime:
-    needs: sanity-check
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ubuntu-22.04, windows-2022, macos-11]
-    runs-on: ${{ matrix.operating-system }}
+  # build-native-runtime:
+  #   needs: sanity-check
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       operating-system: [ubuntu-22.04, windows-2022, macos-11]
+  #   runs-on: ${{ matrix.operating-system }}
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Install protobuf
-        uses: arduino/setup-protoc@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Install protobuf
+  #       uses: arduino/setup-protoc@v2
+  #       with:
+  #         repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure rustc version
-        shell: bash
-        run: |
-          RUSTC_VERSION=$(grep channel rust-toolchain.toml | tail -n1 | tr -d " " | cut -f2 -d'"')
-          echo "RUSTC_VERSION=$RUSTC_VERSION" >> "$GITHUB_ENV"
+  #     - name: Configure rustc version
+  #       shell: bash
+  #       run: |
+  #         RUSTC_VERSION=$(grep channel rust-toolchain.toml | tail -n1 | tr -d " " | cut -f2 -d'"')
+  #         echo "RUSTC_VERSION=$RUSTC_VERSION" >> "$GITHUB_ENV"
 
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUSTC_VERSION }}
-          target: wasm32-unknown-unknown
-          profile: minimal
-          override: true
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: ${{ env.RUSTC_VERSION }}
+  #         target: wasm32-unknown-unknown
+  #         profile: minimal
+  #         override: true
 
-      - name: Install MacOS aarch64 target
-        if: matrix.operating-system == 'macos-11'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUSTC_VERSION }}
-          target: aarch64-apple-darwin
-          profile: minimal
-          override: true
+  #     - name: Install MacOS aarch64 target
+  #       if: matrix.operating-system == 'macos-11'
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: ${{ env.RUSTC_VERSION }}
+  #         target: aarch64-apple-darwin
+  #         profile: minimal
+  #         override: true
 
-      - uses: Swatinem/rust-cache@v2
+  #     - uses: Swatinem/rust-cache@v2
 
-      - name: Figure out platform
-        shell: bash
-        run: |
-          PLATFORM=$(rustup target list --installed | grep "$(uname -m)")
-          echo "PLATFORM=$PLATFORM" >> "$GITHUB_ENV"
+  #     - name: Figure out platform
+  #       shell: bash
+  #       run: |
+  #         PLATFORM=$(rustup target list --installed | grep "$(uname -m)")
+  #         echo "PLATFORM=$PLATFORM" >> "$GITHUB_ENV"
 
-      - name: Figure out tag name
-        shell: bash
-        run: |
-          TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
-          echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
+  #     - name: Figure out tag name
+  #       shell: bash
+  #       run: |
+  #         TAG_NAME=$(git describe --tag || echo "fake-tag-testing")
+  #         echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
 
-      - name: DEBUG
-        shell: bash
-        run: |
-          echo "Tag & Platform is '${{ env.TAG_NAME }}-${{ env.PLATFORM }}'"
+  #     - name: DEBUG
+  #       shell: bash
+  #       run: |
+  #         echo "Tag & Platform is '${{ env.TAG_NAME }}-${{ env.PLATFORM }}'"
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+  #     - name: Build
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release
 
-      - name: Build MacOS aarch64 target
-        if: matrix.operating-system == 'macos-11'
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target aarch64-apple-darwin
+  #     - name: Build MacOS aarch64 target
+  #       if: matrix.operating-system == 'macos-11'
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release --target aarch64-apple-darwin
 
-      - name: Compress
-        uses: thedoctor0/zip-release@0.7.6
-        with:
-          type: "zip"
-          directory: "target/release/"
-          path: "creditcoin3-node*"
-          filename: "../../creditcoin-${{ env.TAG_NAME }}-${{ env.PLATFORM }}.zip"
-          exclusions: "creditcoin3-node.d"
+  #     - name: Compress
+  #       uses: thedoctor0/zip-release@0.7.6
+  #       with:
+  #         type: "zip"
+  #         directory: "target/release/"
+  #         path: "creditcoin3-node*"
+  #         filename: "../../creditcoin-${{ env.TAG_NAME }}-${{ env.PLATFORM }}.zip"
+  #         exclusions: "creditcoin3-node.d"
 
-      - name: Compress MacOS aarch64 target
-        if: matrix.operating-system == 'macos-11'
-        uses: thedoctor0/zip-release@0.7.6
-        with:
-          type: "zip"
-          directory: "target/aarch64-apple-darwin/release/"
-          path: "creditcoin3-node*"
-          filename: "../../../creditcoin-${{ env.TAG_NAME }}-aarch64-apple-darwin.zip"
-          exclusions: "creditcoin3-node.d"
+  #     - name: Compress MacOS aarch64 target
+  #       if: matrix.operating-system == 'macos-11'
+  #       uses: thedoctor0/zip-release@0.7.6
+  #       with:
+  #         type: "zip"
+  #         directory: "target/aarch64-apple-darwin/release/"
+  #         path: "creditcoin3-node*"
+  #         filename: "../../../creditcoin-${{ env.TAG_NAME }}-aarch64-apple-darwin.zip"
+  #         exclusions: "creditcoin3-node.d"
 
-      - name: Upload binary
-        if: matrix.operating-system != 'windows-2022'
-        uses: actions/upload-artifact@v4
-        with:
-          path: "creditcoin-${{ env.TAG_NAME }}-*.zip"
-          if-no-files-found: error
+  #     - name: Upload binary
+  #       if: matrix.operating-system != 'windows-2022'
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         path: "creditcoin-${{ env.TAG_NAME }}-*.zip"
+  #         if-no-files-found: error
 
   build-wasm-runtime:
     needs: sanity-check
@@ -232,7 +232,7 @@ jobs:
       contents: write
     runs-on: ubuntu-22.04
     needs:
-      - build-native-runtime
+      # - build-native-runtime
       - build-wasm-runtime
     steps:
       - uses: actions/checkout@v4
