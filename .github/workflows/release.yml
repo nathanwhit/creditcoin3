@@ -168,7 +168,23 @@ jobs:
         run: |
           mv ${{ steps.srtool_build.outputs.wasm }} creditcoin-${{ env.TAG_NAME }}-runtime.wasm
 
-      - name: Upload binary
+      - name: Build tracing WASM runtime
+        id: srtool_build_tracing
+        uses: chevdor/srtool-actions@v0.8.0
+        env:
+          DEFAULT_FEATURES: "evm-tracing"
+        with:
+          chain: "creditcoin"
+          runtime_dir: runtime
+          package: creditcoin3-runtime
+          tag: ${{ env.RUSTC_VERSION }}
+          workdir: ${{ github.workspace }}
+
+      - name: Rename file
+        run: |
+          mv ${{ steps.srtool_build.outputs.wasm }} tracing-creditcoin-${{ env.TAG_NAME }}-runtime.wasm
+
+      - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           path: "*.wasm"
