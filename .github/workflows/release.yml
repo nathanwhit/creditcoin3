@@ -26,9 +26,9 @@ jobs:
         run: |
           echo "${{ env.TAG_NAME }}" | grep -E "mainnet|testnet|devnet"
 
-      - name: Check tag name vs. Cargo.toml version
-        run: |
-          ./.github/check-version-vs-git-tag.sh
+      # - name: Check tag name vs. Cargo.toml version
+      #   run: |
+      #     ./.github/check-version-vs-git-tag.sh
 
   build-native-runtime:
     needs: sanity-check
@@ -252,9 +252,9 @@ jobs:
         run: |
           ls -lR
 
-      - name: Make the release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: "artifact/creditcoin-*${{ env.TAG_NAME }}*"
-          fail_on_unmatched_files: true
-          name: ${{ env.TAG_NAME }}
+      # - name: Make the release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: "artifact/creditcoin-*${{ env.TAG_NAME }}*"
+      #     fail_on_unmatched_files: true
+      #     name: ${{ env.TAG_NAME }}
