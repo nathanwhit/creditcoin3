@@ -207,14 +207,14 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build -t gluwa/creditcoin3:${{ env.TAG_NAME }} .
+          docker build -t nathanwhit/creditcoin3:${{ env.TAG_NAME }} .
 
           # build the tracing image
-          docker build -t gluwa/creditcoin3-tracing:${{ env.TAG_NAME }} --build-arg features="'evm-tracing'" .
+          docker build -t nathanwhit/creditcoin3-tracing:${{ env.TAG_NAME }} --build-arg features="'evm-tracing'" .
 
           # echo "${{ secrets.DOCKER_PUSH_PASSWORD }}" | docker login -u="${{ secrets.DOCKER_PUSH_USERNAME }}" --password-stdin
-          # docker push gluwa/creditcoin3:${{ env.TAG_NAME }}
-          # docker push gluwa/creditcoin3-tracing:${{ env.TAG_NAME }}
+          docker push nathanwhit/creditcoin3:${{ env.TAG_NAME }}
+          docker push nathanwhit/creditcoin3-tracing:${{ env.TAG_NAME }}
 
           # # only -mainnet images are tagged as :latest
           # # shellcheck disable=SC2046,SC2143
